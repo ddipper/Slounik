@@ -1,5 +1,8 @@
 package com.example.slounik;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +15,7 @@ import org.jsoup.select.Elements;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -20,15 +24,18 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button button;
+    private Button button1;
+    private Button button2;
     private TextView textView;
+    public final String CHANNEL_ID = "Default channel";
+    final String[] text = new String[10];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final String[] text = new String[10];
+
 
 
 
@@ -58,12 +65,36 @@ public class MainActivity extends AppCompatActivity {
         thread.start();
 
         textView = findViewById(R.id.textView);
-        button = findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
+        button1 = findViewById(R.id.button1);
+        button2 = findViewById(R.id.button2);
+
+        button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 textView.setText(text[0]);
             }
         });
+
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Notify();
+            }
+        });
+    }
+
+    public void Notify(){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "TEST_DESCRIPTION", NotificationManager.IMPORTANCE_DEFAULT);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle(text[0])
+                    .setContentText("test text")
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .build();
+            notificationManager.notify(1, notification);
+        }
     }
 }
